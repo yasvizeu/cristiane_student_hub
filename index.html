@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>YV English · Cristiane</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-plan="Foundation">
+  <script>
+    const AUTH_KEY = "yv_cristiane_auth_until";
+    const SESSION_KEY = "yv_cristiane_session_auth";
+    const saved = localStorage.getItem(AUTH_KEY);
+    const session = sessionStorage.getItem(SESSION_KEY);
+    if (!session) {
+      if (!saved) window.location.href = "login.html";
+      else {
+        try {
+          const data = JSON.parse(saved);
+          if (!data.expiresAt || Date.now() > data.expiresAt) {
+            localStorage.removeItem(AUTH_KEY);
+            window.location.href = "login.html";
+          } else sessionStorage.setItem(SESSION_KEY, "true");
+        } catch {
+          localStorage.removeItem(AUTH_KEY);
+          window.location.href = "login.html";
+        }
+      }
+    }
+  </script>
+
+  <div class="site-shell">
+    <header class="hero">
+      <div class="hero-inner">
+        <nav class="hero-nav">
+          <img src="https://www.yvenglish.com/assets/logo.png" alt="YV English" class="logo">
+          <div class="nav-actions">
+            <div class="student-badge"><span class="badge-dot"></span><span>Foundation</span></div>
+            <button class="logout-btn" onclick="logoutStudent()">Sair</button>
+          </div>
+        </nav>
+
+        <div class="hero-grid">
+          <div class="hero-body">
+            <p class="eyebrow">Sua área pessoal</p>
+            <h1>Hello,<br><em>Cristiane</em> ✦</h1>
+            <p class="hero-sub">Seus materiais, exercícios, glossário e flashcards organizados para revisar com calma durante a semana.</p>
+            <div class="hero-actions">
+              <button onclick="scrollToSection('weeksSection')">Ver semanas</button>
+              <button class="ghost" onclick="scrollToSection('extraExercisesSection')">Práticas extras</button>
+              <a class="ghost" href="flashcards.html">Flashcards</a>
+            </div>
+          </div>
+          <aside class="hero-panel"><span>Current focus</span><strong>To Be</strong><p>Ser/estar, perguntas, negativas, família, filhos e frases úteis para a vida real nos EUA.</p></aside>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="quick-grid">
+        <button class="feature-card" onclick="openDaily()"><span class="feature-icon">📌</span><span class="feature-kicker">Daily Content</span><strong>Texto de hoje</strong><small>Disponível apenas para planos Fluency e Performance.</small></button>
+        <a class="feature-card" href="flashcards.html"><span class="feature-icon">🃏</span><span class="feature-kicker">Flashcards</span><strong>Revisão inteligente</strong><small>Palavras difíceis aparecem mais vezes.</small></a>
+        <button class="feature-card" onclick="toggleGlossary()"><span class="feature-icon">📖</span><span class="feature-kicker">Glossário</span><strong>Todas as palavras</strong><small>Vocabulário acumulado com áudio.</small></button>
+      </section>
+
+      <section class="section-block" id="weeksSection">
+        <div class="section-heading"><p>Semanas</p><h2>Materiais da Cristiane</h2><span>Abra a semana para ver foco, exercícios, vocabulário, notas e atividades feitas em aula.</span></div>
+        <section class="weeks-grid" id="weeksGrid"></section>
+      </section>
+
+      <section class="dark-section" id="extraExercisesSection">
+        <div class="section-heading light"><p>Extra exercises</p><h2>Páginas práticas</h2><span>Atividades interativas para revisar fora da aula.</span></div>
+        <div class="extra-exercises-grid" id="extraExercisesGrid"></div>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading"><p>Extra content</p><h2>Conteúdos recomendados</h2><span>Podcasts, vídeos, sites e notas para continuar estudando.</span></div>
+        <div class="content-tabs" id="contentTabs"></div>
+        <div class="content-grid" id="extraContentGrid"></div>
+      </section>
+
+      <section class="dark-section"><div class="compact-cta"><div><p class="feature-kicker">Need help?</p><h2>Fale com a Yas ✦</h2><span>Use esse botão quando tiver dúvida sobre tarefa, pronúncia ou plataforma.</span></div><a class="dark-cta-btn" href="https://wa.me/5521965126480?text=Oi%20Yas%2C%20tenho%20uma%20d%C3%BAvida%20sobre%20meus%20materiais%20da%20YV." target="_blank">Abrir WhatsApp</a></div></section>
+
+      <section class="glossary-panel">
+        <button class="glossary-btn" onclick="toggleGlossary()"><div><span>Glossário</span><strong>Vocabulário acumulado</strong><small>Clique para abrir ou esconder as palavras.</small></div><b id="glossaryBtnCta">Ver palavras →</b></button>
+        <section class="glossary-section" id="glossarySection" style="display:none;"></section>
+      </section>
+    </main>
+  </div>
+
+  <div class="overlay" id="overlay"><div class="modal" role="dialog" aria-modal="true"><button class="modal-close" onclick="closeModal()" aria-label="Fechar">✕</button><aside class="modal-aside"><p class="aside-week" id="modalWeekLabel"></p><h2 class="aside-title" id="modalTitle"></h2><span class="aside-rule"></span><div class="aside-focus"><strong>Foco da semana</strong><p id="modalFocus"></p></div><span class="aside-heart">♥</span></aside><section class="modal-body" id="modalBody"></section></div></div>
+  <div class="overlay" id="dailyOverlay"><div class="modal" role="dialog" aria-modal="true"><button class="modal-close" onclick="closeDaily()" aria-label="Fechar">✕</button><aside class="modal-aside daily-aside"><p class="aside-week">Daily Content</p><h2 class="aside-title" id="dailyDate"></h2><span class="aside-rule"></span><div class="aside-focus"><strong>Foundation</strong><p>Conteúdo diário exclusivo dos planos Fluency e Performance.</p></div><span class="aside-heart">♥</span></aside><section class="modal-body" id="dailyBody"></section></div></div>
+  <div class="floating-btns"><a class="float-btn float-wa" href="https://wa.me/5521965126480?text=Oi%20Yas%2C%20tenho%20uma%20d%C3%BAvida!" target="_blank" title="Falar com a Yas">✦</a><button class="float-btn float-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Voltar ao topo">↑</button></div>
+  <script src="script.js"></script>
+</body>
+</html>
